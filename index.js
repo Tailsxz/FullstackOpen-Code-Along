@@ -33,6 +33,23 @@ app.get('/', (request, response) => {
 app.get('/api/notes', (request, response) => {
   response.json(notes);
 })
+app.get('/api/notes/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const note = notes.find(note => note.id === id);
+  if (note) {
+    response.json(note);
+  } else {
+    response.statusMessage = 'Sorry that resource doesn\'t exist!'
+    response.status(404).end();
+  }
+})
+
+app.delete('/api/notes/:id', (request, response) => {
+  const id = Number(request.params.id);
+  notes = notes.filter(note => note.id !== id);
+  
+  response.status(204).end();
+})
 
 const PORT = process.env.PORT || 2277;
 app.listen(PORT, () => {
