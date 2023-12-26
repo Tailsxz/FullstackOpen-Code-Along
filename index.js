@@ -27,9 +27,44 @@ let notes = [
 //   response.end(JSON.stringify(notes));
 // })
 
-app.post('/api/notes', (request, response) => {
-  const note = request.body;
-  console.log(note);
+// app.post('/api/notes', (request, response) => {
+//   // const note = request.body;
+//   // console.log(note);
+//   // response.json(note);
+//   const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0;
+  
+//   const note = request.body
+//   note.id = maxId + 1;
+
+//   notes = notes.concat(note);
+
+//   response.json(note);
+// })
+
+//lets refactor the POST!
+const generateId = () => {
+  const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0
+  return maxId + 1;
+}
+
+app.post('/api/notes', (request, response) => { 
+  const body = request.body;
+
+  if (!body.content) {
+    //we HAVE to call return to exit out of the function otherwise, the code will keep executing and store an incomplete note!
+    return response.status(400).json({
+      error: 'content is missing'
+    });
+  };
+
+  const note = {
+    content: body.content,
+    important: Boolean(body.important) || false,
+    id: generateId(),
+  }
+
+  notes = notes.concat(note);
+
   response.json(note);
 })
 
